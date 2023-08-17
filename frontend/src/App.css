@@ -1,0 +1,23 @@
+.container {
+  margin-top: 50px;
+}
+.header {
+  text-align: center;
+}
+.nav {
+
+  padding: 10px;
+  color: white;
+}
+.center {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.error{
+  color: rgb(233, 51, 51);
+  margin-top: 5px;
+}
+.simple-select{
+  -webkit-appearance: none;
+}
