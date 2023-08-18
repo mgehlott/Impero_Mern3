@@ -12,7 +12,7 @@ const Employee = ({
   birthDate,
   salary,
   resignationDate,
-  email
+  email,
 }) => {
   const navigate = useNavigate();
   const joinDate = new Date(joiningDate).toLocaleDateString();
@@ -42,7 +42,17 @@ const Employee = ({
   const editHandler = () => {
     navigate('/add-employee', {
       replace: true,
-      state: { idx, _id, name, company, joiningDate, birthDate, salary,resignationDate,email },
+      state: {
+        idx,
+        _id,
+        name,
+        company,
+        joiningDate,
+        birthDate,
+        salary,
+        resignationDate,
+        email,
+      },
     });
   };
   return (
@@ -53,7 +63,7 @@ const Employee = ({
       <td>{joinDate}</td>
       <td>{bDate}</td>
       <td>{salary}</td>
-      <td className="text-center">
+      <td className="d-flex justify-content-around align-items-center">
         <AiFillEdit
           className="m-2 ml-3"
           fontSize="21px"

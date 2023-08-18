@@ -23,8 +23,16 @@ exports.addEvaluation = async (req, res, next) => {
 };
 exports.getEvaluation = async (req, res, next) => {
   try {
-    const result = await Employee.find({}, { name: 1, evaluations: 1 });
-    res.json(result);
+    //const result = await Employee.find({}, { name: 1, evaluations: 1 });
+    const data = await Employee.aggregate([
+      {
+        $unwind: '$evaluations',
+      },
+      { $project: { _id: 1, evaluations: 1, name: 1 } },
+      {$sort:{'evaluations.year':1}}
+    ],);
+    console.log(data);
+    res.json(data);
   } catch (error) {
     next(error);
   }

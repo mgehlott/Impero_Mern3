@@ -57,13 +57,19 @@ exports.addEmployee = async (req, res, next) => {
 };
 exports.getEmployee = async (req, res, next) => {
   console.log(req.query);
-  const sort = {};
-  if (req.query.sortBy && req.query.order) {
-    sort[req.query.sortBy] = req.query.order === 'desc' ? -1 : 1;
+  const filter = {};
+
+  if (req.query.salary) {
+    filter['salary'] = { $lte: req.query.salary };
   }
-  console.log(sort);
+  if (req.query.joiningDate)
+  {
+    console.log(req.query.joiningDate);
+    filter['joiningDate'] = {$lte:new Date(req.query.joiningDate)}
+    }
+  console.log(filter);
   try {
-    const employees = await Employee.find({}, null, { sort: sort });
+    const employees = await Employee.find(filter);
     res.json(employees);
   } catch (error) {
     next(error);

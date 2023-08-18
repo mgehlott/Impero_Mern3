@@ -5,7 +5,6 @@
   text-align: center;
 }
 .nav {
-
   padding: 10px;
   color: white;
 }
@@ -14,10 +13,22 @@
   justify-content: center;
   flex-direction: column;
 }
-.error{
+.error {
   color: rgb(233, 51, 51);
   margin-top: 5px;
 }
-.simple-select{
+.simple-select {
   -webkit-appearance: none;
+}
+.salary-select {
+  max-width: 30%;
+}
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+}
+.slider{
+  max-width: 70%;
 }

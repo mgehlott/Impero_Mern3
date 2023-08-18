@@ -1,31 +1,38 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Button, Col, Container, Row, Table } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row, Table } from 'react-bootstrap';
 import Employee from './Employee';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { TbArrowBigDownFilled, TbArrowBigUpFilled } from 'react-icons/tb';
+import { useFormik } from 'formik';
 const URL = 'http://localhost:8080/employee';
 const Employees = () => {
   const [employee, setEmployee] = useState([]);
-  const [sortData, setSortData] = useState({});
   const token = useSelector((state) => state.auth.token);
-  console.log(token);
+  const formik = useFormik({
+    initialValues: {
+      joiningDate: '',
+      salary: '',
+    },
+  });
+  const { salary, joiningDate } = formik.values;
   useEffect(() => {
     (async () => {
       fetchEmployee();
     })();
     console.log('effect');
-  }, [sortData]);
+  }, [salary, joiningDate]);
   const fetchEmployee = async () => {
-    let fullUrl = '';
-    if (sortData.sortBy && sortData.order) {
-      fullUrl = `${URL}?sortBy=${sortData.sortBy}&order=${sortData.order}`;
-    } else {
-      fullUrl = URL;
+    let fullUrl = URL;
+    if (salary === 'Salary') return;
+    if (salary && joiningDate) {
+      fullUrl = fullUrl + `?salary=${salary}&joiningDate=${joiningDate}`;
+    } else if (salary) {
+      fullUrl = fullUrl + `?salary=${salary}`;
+    } else if (joiningDate) {
+      fullUrl = fullUrl + `?joiningDate=${joiningDate}`;
     }
     console.log(fullUrl);
-    console.log(token);
     try {
       const { data, status } = await axios.get(fullUrl, {
         headers: {
@@ -40,35 +47,6 @@ const Employees = () => {
       console.log(error);
     }
   };
-  const sortByJoinDate = () => {
-    //  const temp = sortData;
-    setSortData((prev) => {
-      return {
-        sortBy: 'joiningDate',
-        order: prev.order === 'asc' ? 'desc' : 'asc',
-      };
-    });
-  };
-  const sortBySalary = () => {
-    setSortData((prev) => {
-      return {
-        sortBy: 'salary',
-        order: prev.order === 'asc' ? 'desc' : 'asc',
-      };
-    });
-  };
-  const salrayIcon =
-    sortData.sortBy === 'salary' && sortData.order === 'asc' ? (
-      <TbArrowBigUpFilled />
-    ) : (
-      <TbArrowBigDownFilled />
-    );
-  const joinDateIcon =
-    sortData.sortBy === 'joiningDate' && sortData.order === 'asc' ? (
-      <TbArrowBigUpFilled />
-    ) : (
-      <TbArrowBigDownFilled />
-    );
   return (
     <Container
       fluid
@@ -79,17 +57,24 @@ const Employees = () => {
           <Link to="/add-employee">
             <Button>Add New</Button>
           </Link>
-          <Button
-            className="mx-3"
-            onClick={sortByJoinDate}
+          <div>
+            <Form.Control
+              className="styled-date"
+              type="date"
+              {...formik.getFieldProps('joiningDate')}
+            />
+          </div>
+          <Form.Select
+            className="simple-select salary-select"
+            aria-label="salary"
+            onChange={formik.handleChange('salary')}
           >
-            Join Date
-            <span className="mx-2">{joinDateIcon}</span>
-          </Button>
-          <Button onClick={sortBySalary}>
-            Salary
-            <span className="mx-2">{salrayIcon}</span>
-          </Button>
+            <option>Salary</option>
+            <option value={10000}>10000</option>
+            <option value={20000}>20000</option>
+            <option value={50000}>50000</option>
+            <option value={100000}>100000</option>
+          </Form.Select>
         </Col>
       </Row>
       <Row>
@@ -125,4 +110,8 @@ const Employees = () => {
     </Container>
   );
 };
+
+
+
+
 export default Employees;

@@ -13,7 +13,7 @@ const AddEmployee = () => {
   const [companies, setCompanies] = useState([]);
   const { state } = useLocation();
   const token = useSelector((state) => state.auth.token);
-  console.log(state);
+  
   const navigate = useNavigate();
   const eighteen_year_ago = dayjs().subtract(18, 'year').format('YYYY-MM-DD');
   const joinDate = state?.joiningDate
