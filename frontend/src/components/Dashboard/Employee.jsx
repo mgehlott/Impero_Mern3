@@ -40,7 +40,8 @@ const Employee = ({
     }
   };
   const editHandler = () => {
-    navigate('/add-employee', {
+    console.log(company);
+    navigate('/edit-employee', {
       replace: true,
       state: {
         idx,

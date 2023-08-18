@@ -52,6 +52,10 @@ function App() {
               element={<AddEmployee />}
             />
             <Route
+              path="edit-employee"
+              element={<AddEmployee />}
+            />
+            <Route
               path="add-evoluation"
               element={<AddEvoluation />}
             />

@@ -10,15 +10,19 @@ const authMiddleware = require('./middlewares/authMiddleware');
 const cors = require('cors');
 const app = express();
 dotenv.config();
+// app.use((req, res, next) => {
+//   console.log('app');
+//   req.app = app;
+//   next();
+// })
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 const PORT = process.env.PORT || 5000;
 dbConnect();
-
-app.use('/company',authMiddleware, companyRouter);
-app.use('/employee',authMiddleware, employeeRouter);
-app.use('/evaluation',authMiddleware, evaluationRouter);
+app.use('/company', authMiddleware, companyRouter);
+app.use('/employee', authMiddleware, employeeRouter);
+app.use('/evaluation', authMiddleware, evaluationRouter);
 app.use('/auth', authRouter);
 app.use(notFound);
 app.use(mainErrorHandler);

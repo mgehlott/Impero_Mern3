@@ -13,7 +13,6 @@ const AddEmployee = () => {
   const [companies, setCompanies] = useState([]);
   const { state } = useLocation();
   const token = useSelector((state) => state.auth.token);
-  
   const navigate = useNavigate();
   const eighteen_year_ago = dayjs().subtract(18, 'year').format('YYYY-MM-DD');
   const joinDate = state?.joiningDate
@@ -25,10 +24,10 @@ const AddEmployee = () => {
   const rDate = state?.resignationDate
     ? dayjs(state?.resignationDate).format('YYYY-MM-DD')
     : '';
-  console.log(joinDate, bDate, rDate);
+  console.log(joinDate, bDate, rDate, state?.company);
   const formik = useFormik({
     initialValues: {
-      company: state?.company.name || '',
+      company: state?.company.companyId || '',
       name: state?.name || '',
       email: state?.email || '',
       birthdate: bDate || '',
@@ -85,25 +84,32 @@ const AddEmployee = () => {
   }, []);
   const addEmployee = async (values) => {
     console.log(values.company);
-    const companyId = companies.find(
-      (item) => item.name.trim() === values.company.trim()
-    );
-    console.log(companyId);
+    const companyName = companies.find((item) => item._id === values.company);
+    console.log(companyName);
     let fullUrl = URL;
-    let method;
+    let method, data;
     if (state) {
       fullUrl += `/employee/edit/${state._id}`;
       method = 'put';
+      data = {
+        ...values,
+        company: {
+          companyId: values.company,
+          name: companyName.name,
+        },
+      };
       console.log('edit');
     } else {
       fullUrl += '/employee/add';
       method = 'post';
+      data = { ...values };
       console.log('add');
     }
+    console.log('data', data);
     try {
       const { status, ...restResult } = await axios(fullUrl, {
         method: method,
-        data: { ...values, company: companyId },
+        data,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -138,10 +144,18 @@ const AddEmployee = () => {
           <Form.Select
             className="simple-select"
             {...formik.getFieldProps('company')}
+            // {state?.company_id && defaultChecked={com}
           >
-            {companies.map((company) => (
-              <option key={company._id}>{company.name}</option>
-            ))}
+            {companies.map((company) => {
+              return (
+                <option
+                  key={company._id}
+                  value={company._id}
+                >
+                  {company.name}
+                </option>
+              );
+            })}
           </Form.Select>
           {formik.errors.company && formik.touched.company && (
             <InputError>{formik.errors.company}</InputError>

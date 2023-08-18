@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Container, Table } from 'react-bootstrap';
+import { Col, Container, Table ,Row} from 'react-bootstrap';
 import Evaluation from './Evaluation';
-import 'rc-slider/assets/index.css';
-import Slider, { Range } from 'rc-slider';
+import CustomSlider from '../utils/CustomSlider';
 const URL = 'http://localhost:8080/evaluation';
 const Evaluations = () => {
   const [myEvaluations, setMyEvaluations] = useState([]);
@@ -62,51 +61,42 @@ const Evaluations = () => {
       fluid
       className="mt-3"
     >
-      <div className="slider-container">
-        <div className="w-50">
-          <h5 className="text-center">Year Range</h5>
-          <div className="d-flex justify-content-between align-items-center">
-            <span>{sliderValues[0]}</span>
-            {console.log(minYear, maxYear)}
-            <Slider
-              className="slider"
-              range
-              min={minYear}
-              max={maxYear}
-              step={1}
-              value={sliderValues}
-              onChange={handleSliderChange}
-            />
-            <span className="font-weight-bold">{sliderValues[1]}</span>
-          </div>
-        </div>
-      </div>
-      <Table
-        striped
-        bordered
-        hover
-      >
-        <thead>
-          <tr>
-            <th>S.NO.</th>
-            <th>Emp Name</th>
-            <th>Comp Name</th>
-            {years.length > 0
-              ? years.map((item) => <th key={item}>{item}</th>)
-              : null}
-          </tr>
-        </thead>
-        <tbody>
-          {myEvaluations.map((item, idx) => (
-            <Evaluation
-              key={item._id + idx}
-              item={item}
-              idx={idx}
-              years={years}
-            />
-          ))}
-        </tbody>
-      </Table>
+      <CustomSlider
+        maxYear={maxYear}
+        minYear={minYear}
+        sliderValues={sliderValues}
+        handleSliderChange={handleSliderChange}
+      />
+      <Row>
+        <Col>
+          <Table
+            striped
+            bordered
+            hover
+          >
+            <thead>
+              <tr>
+                <th>S.NO.</th>
+                <th>Emp Name</th>
+                <th>Comp Name</th>
+                {years.length > 0
+                  ? years.map((item) => <th key={item}>{item}</th>)
+                  : null}
+              </tr>
+            </thead>
+            <tbody>
+              {myEvaluations.map((item, idx) => (
+                <Evaluation
+                  key={item._id + idx}
+                  item={item}
+                  idx={idx}
+                  years={years}
+                />
+              ))}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
     </Container>
   );
 };

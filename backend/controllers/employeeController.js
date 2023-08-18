@@ -1,6 +1,7 @@
+const { matchedData, validationResult } = require('express-validator');
 const Company = require('../models/Company');
 const Employee = require('../models/Employee');
-const { Types } = require('mongoose');
+const { Types, default: mongoose } = require('mongoose');
 exports.addEmployee = async (req, res, next) => {
   const {
     company: companyId,
@@ -10,11 +11,11 @@ exports.addEmployee = async (req, res, next) => {
     joiningdate,
     resignationdate,
     salary,
-  } = req.body;
-  console.log(req.body);
-  console.log(companyId);
-  if (!companyId || !name || !email || !birthdate || !joiningdate || !salary) {
-    const err = new Error('All Fields are require');
+  } = matchedData(req);
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    const err = new Error(errors.array()[0].msg);
     next(err);
     return;
   }
@@ -32,7 +33,9 @@ exports.addEmployee = async (req, res, next) => {
       const err = new Error('Birth date must be lower than joining date');
       next(err);
     } else {
+      console.log('dljflsdjf', companyId);
       const companyName = await Company.findById(companyId);
+      console.log(companyName);
       const tempUser = {
         company: {
           name: companyName.name,
@@ -44,6 +47,7 @@ exports.addEmployee = async (req, res, next) => {
         joiningDate: new Date(joiningdate),
         salary,
       };
+      console.log(tempUser);
       if (resignationdate) {
         tempUser.resignationDate = new Date(resignationdate);
       }
@@ -58,15 +62,13 @@ exports.addEmployee = async (req, res, next) => {
 exports.getEmployee = async (req, res, next) => {
   console.log(req.query);
   const filter = {};
-
   if (req.query.salary) {
     filter['salary'] = { $lte: req.query.salary };
   }
-  if (req.query.joiningDate)
-  {
+  if (req.query.joiningDate) {
     console.log(req.query.joiningDate);
-    filter['joiningDate'] = {$lte:new Date(req.query.joiningDate)}
-    }
+    filter['joiningDate'] = { $lte: new Date(req.query.joiningDate) };
+  }
   console.log(filter);
   try {
     const employees = await Employee.find(filter);
@@ -78,6 +80,21 @@ exports.getEmployee = async (req, res, next) => {
 exports.editEmployee = async (req, res, next) => {
   const { employeeId } = req.params;
   console.log(req.body);
+  const user = await Employee.findOne({ email: req.body.email });
+  console.log(user);
+ // console.log(user._id.toString(), employeeId);
+  if (user && user._id.toString() !== employeeId) {
+    const err = new Error('Email already exits');
+    next(err);
+    return;
+  } else if (getAge(req.body.birthdate) <= 18) {
+    const err = new Error('Age is less than 18');
+    next(err);
+    return;
+  } else if (compareDate(req.body.birthdate, req.body.joiningdate)) {
+    const err = new Error('Birth date must be lower than joining date');
+    return next(err);
+  }
   const updated = await Employee.findByIdAndUpdate(employeeId, req.body, {
     new: true,
   });
