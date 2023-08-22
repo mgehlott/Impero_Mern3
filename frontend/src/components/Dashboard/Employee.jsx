@@ -18,7 +18,6 @@ const Employee = ({
   const joinDate = new Date(joiningDate).toLocaleDateString();
   const bDate = new Date(birthDate).toLocaleDateString();
   const deleteHanlder = async () => {
-    console.log('delete');
     const token = JSON.parse(localStorage.getItem('token'));
     try {
       const { status, ...restResult } = await axios.delete(
@@ -40,7 +39,8 @@ const Employee = ({
     }
   };
   const editHandler = () => {
-    navigate('/add-employee', {
+    console.log(company);
+    navigate('/edit-employee', {
       replace: true,
       state: {
         idx,

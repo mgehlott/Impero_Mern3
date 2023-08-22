@@ -13,3 +13,9 @@ export const showToast = (type, message) => {
       return false;
   }
 };
+
+
+export const getCompaniesName = (companies) => {
+  
+
+}

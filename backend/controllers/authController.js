@@ -1,10 +1,13 @@
 const user = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { checkPassword } = require('../utils/password');
+const { validationResult, matchedData } = require('express-validator');
 exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    const err = new Error('Email or Password not provided');
+  const { email, password } = matchedData(req);
+  const errors = validationResult(req);
+  console.log(errors);
+  if (!errors.isEmpty()) {
+    const err = new Error(errors.array()[0].msg);
     next(err);
     return;
   }

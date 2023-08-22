@@ -40,6 +40,10 @@ function App() {
               element={<AddCompany />}
             />
             <Route
+              path="/edit-company"
+              element={<AddCompany />}
+            />
+            <Route
               path="companies"
               element={<Companies />}
             />
@@ -49,6 +53,10 @@ function App() {
             />
             <Route
               path="add-employee"
+              element={<AddEmployee />}
+            />
+            <Route
+              path="edit-employee"
               element={<AddEmployee />}
             />
             <Route

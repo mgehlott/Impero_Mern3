@@ -2,7 +2,7 @@ import { useFormik } from 'formik';
 import { useState, useEffect } from 'react';
 import InputError from '../utils/InputError';
 import { Button, Container, Form } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { showToast } from '../../utils/tool';
 import axios from 'axios';
@@ -11,13 +11,18 @@ const URL = 'http://localhost:8080';
 const AddEvoluation = () => {
   const [employees, setEmployee] = useState([]);
   const navigate = useNavigate();
+  const { state } = useLocation();
   const currentDate = dayjs().format('YYYY-MM');
+  console.log(state);
+  const joinDate = state?.year
+    ? dayjs(state?.joiningDate).format('YYYY-MM-DD')
+    : '';
   const formik = useFormik({
     initialValues: {
-      name: '',
-      percent: '',
-      year: '',
-      salary: '',
+      name: state?.name || '',
+      percent: state ? state.percentage : '',
+      year: joinDate,
+      salary: state ? state.salary : '',
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Name is required'),

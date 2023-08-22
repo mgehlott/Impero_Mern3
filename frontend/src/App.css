@@ -26,9 +26,20 @@
 .slider-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  margin-bottom: 2rem;
+  flex-basis: 250px;
 }
-.slider{
+.slider {
   max-width: 70%;
+}
+.icon-container {
+  display: flex;
+  flex-basis: 20%;
+  justify-content: space-around;
+  align-items: center;
+}
+.select {
+  min-width: 30%;
+}
+.nav-dropdown {
+  transition: all 2s ease;
 }
