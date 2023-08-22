@@ -40,6 +40,10 @@ function App() {
               element={<AddCompany />}
             />
             <Route
+              path="/edit-company"
+              element={<AddCompany />}
+            />
+            <Route
               path="companies"
               element={<Companies />}
             />

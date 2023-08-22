@@ -22,5 +22,6 @@ router.post(
   evaluationController.addEvaluation
 );
 router.get('/', evaluationController.getEvaluation);
+router.get('/years', evaluationController.getYearsRange);
 router.delete('/delete', evaluationController.deleteEvaluation);
 module.exports = router;

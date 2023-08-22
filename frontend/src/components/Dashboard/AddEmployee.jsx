@@ -88,6 +88,7 @@ const AddEmployee = () => {
     console.log(companyName);
     let fullUrl = URL;
     let method, data;
+    
     if (state) {
       fullUrl += `/employee/edit/${state._id}`;
       method = 'put';

@@ -1,14 +1,22 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Col, Container, Table ,Row} from 'react-bootstrap';
+import { Col, Container, Form, Table, Row } from 'react-bootstrap';
 import Evaluation from './Evaluation';
 import CustomSlider from '../utils/CustomSlider';
-const URL = 'http://localhost:8080/evaluation';
+import { useFormik } from 'formik';
+import { useSelector } from 'react-redux';
+import Select from 'react-select';
+const URL = 'http://localhost:8080';
 const Evaluations = () => {
   const [myEvaluations, setMyEvaluations] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [sliderValues, setSliderValues] = useState([2021, 2023]);
   const [years, setYears] = useState([]);
-  let minYear, maxYear;
+  const [companySelectValue, setCompanySelectValue] = useState(null);
+  const [isMenu, setIsMenu] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+  let minYear = 2020,
+    maxYear = 2023;
   const handleSliderChange = (values) => {
     setSliderValues(values);
     const minYear = values[0];
@@ -22,13 +30,17 @@ const Evaluations = () => {
   useEffect(() => {
     (async () => {
       fetchEvaluations();
+      fetchCompanies();
     })();
   }, []);
-  const fetchEvaluations = async () => {
-    console.log('fetch');
-    const token = JSON.parse(localStorage.getItem('token'));
+  useEffect(() => {
+    (() => {
+      fetchYears();
+    })();
+  }, []);
+  const fetchEvaluations = async (query = '') => {
     try {
-      const { data, status } = await axios.get(URL, {
+      const { data, status } = await axios.get(`${URL}/evaluation${query}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,37 +48,110 @@ const Evaluations = () => {
       if (status === 200) {
         console.log(data);
         setMyEvaluations(data);
-        const allYears = getYears(data);
-        setYears(allYears);
       }
     } catch (error) {
       console.log(error);
     }
   };
-  const getYears = (data) => {
-    const tempYears = [];
-    data?.forEach((item) => {
-      //console.log(item.year);
-      if (!tempYears.includes(item.evaluations.year)) {
-        tempYears.push(item.evaluations.year);
-      }
-    });
-    return tempYears.sort((a, b) => a - b);
+  const fetchCompanies = async () => {
+    try {
+      const { data } = await axios.get(`${URL}/company`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(data);
+      //   data.unshift({ _id: '1', name: '' });
+      setCompanies(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
   };
-  const tempYear = getYears(myEvaluations);
-  minYear = Math.min(...tempYear) || 2020;
-  maxYear = Math.max(...tempYear) || 2025;
+  const fetchYears = async () => {
+    try {
+      const { data, status } = await axios.get(`${URL}/evaluation/years`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (status === 200) {
+        console.log(data);
+        setYears(data);
+        minYear = data[0] | 2020;
+        maxYear = data[data.length - 1] | 2025;
+        console.log(minYear, maxYear, 'dd', data[0], data[data.length - 1]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const formik = useFormik({
+    initialValues: {
+      company: '',
+    },
+  });
+  console.log(formik.values);
+  const selectChangeHandler = (e) => {
+    console.log('change', e);
+    const company = e?.value;
+    const query = company ? `?company=${company}` : '';
+    setCompanySelectValue(e);
+    fetchEvaluations(query);
+  };
+  const comapnySelectCloseHandler = () => {
+    console.log('close select');
+    fetchEvaluations();
+  };
+  const companiesName = companies.map((item) => {
+    return { label: item.name, value: item.name };
+  });
   return (
     <Container
       fluid
       className="mt-3"
     >
-      <CustomSlider
-        maxYear={maxYear}
-        minYear={minYear}
-        sliderValues={sliderValues}
-        handleSliderChange={handleSliderChange}
-      />
+      <Row>
+        <Col className="d-flex justify-content-between align-items-center mb-5">
+          {/* <Form.Group
+            className="mb-2"
+            controlId="formGroupCompany"
+          >
+            <Form.Label>Select Company</Form.Label>
+            <Form.Select
+              className="simple-select"
+              name="company"
+              value={formik.values.company}
+              onChange={selectChangeHandler}
+            >
+              {companies.map((company) => {
+                return (
+                  <option
+                    key={company._id}
+                    value={company.name}
+                  >
+                    {company.name}
+                  </option>
+                );
+              })}
+            </Form.Select>
+          </Form.Group> */}
+          <Select
+            className="basic-single select"
+            classNamePrefix="select"
+            isClearable={true}
+            options={companiesName}
+            onChange={selectChangeHandler}
+            value={companySelectValue}
+          />
+          <CustomSlider
+            maxYear={maxYear}
+            minYear={minYear}
+            sliderValues={sliderValues}
+            handleSliderChange={handleSliderChange}
+          />
+        </Col>
+      </Row>
       <Row>
         <Col>
           <Table
@@ -78,10 +163,11 @@ const Evaluations = () => {
               <tr>
                 <th>S.NO.</th>
                 <th>Emp Name</th>
-                <th>Comp Name</th>
                 {years.length > 0
                   ? years.map((item) => <th key={item}>{item}</th>)
                   : null}
+                <th>Total</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
