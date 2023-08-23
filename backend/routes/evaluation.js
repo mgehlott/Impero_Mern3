@@ -23,5 +23,16 @@ router.post(
 );
 router.get('/', evaluationController.getEvaluation);
 router.get('/years', evaluationController.getYearsRange);
+router.put(
+  '/edit/:employeeId',
+  [
+    body('company').trim().notEmpty().withMessage('Invalid company name'),
+    body('year').trim().notEmpty().withMessage('Invalid year'),
+    body('salary').trim().notEmpty().withMessage('Invalid salary'),
+    body('percentage').trim().notEmpty().withMessage('Invalid percentage'),
+    body('updateYear').trim().notEmpty().withMessage('Invalid updateYear'),
+  ],
+  evaluationController.editEvaluation
+);
 router.delete('/delete', evaluationController.deleteEvaluation);
 module.exports = router;

@@ -7,21 +7,26 @@ import * as Yup from 'yup';
 import { showToast } from '../../utils/tool';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useSelector } from 'react-redux';
+import useEmployeeList from '../../hooks/useEmployeeList';
 const URL = 'http://localhost:8080';
 const AddEvoluation = () => {
-  const [employees, setEmployee] = useState([]);
+  const [employees] = useEmployeeList();
   const navigate = useNavigate();
   const { state } = useLocation();
+  const token = useSelector((state) => state.auth.token);
+  console.log('token', token);
   const currentDate = dayjs().format('YYYY-MM');
   console.log(state);
-  const joinDate = state?.year
-    ? dayjs(state?.joiningDate).format('YYYY-MM-DD')
+  const stateDate = state?.year
+    ? dayjs(state?.year + '-01').format('YYYY-MM')
     : '';
+  console.log('st', stateDate, state?.year);
   const formik = useFormik({
     initialValues: {
-      name: state?.name || '',
+      name: state?.employeeId || '',
       percent: state ? state.percentage : '',
-      year: joinDate,
+      year: stateDate,
       salary: state ? state.salary : '',
     },
     validationSchema: Yup.object({
@@ -38,51 +43,64 @@ const AddEvoluation = () => {
   const cancelHandler = () => {
     navigate('/evoluations', { replace: true });
   };
-  useEffect(() => {
-    (async () => {
-      fetchEmployee();
-    })();
-  }, []);
-  const fetchEmployee = async () => {
-    const token = JSON.parse(localStorage.getItem('token'));
-    try {
-      const { data, status } = await axios.get(`${URL}/employee`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (status === 200) {
-        data.unshift({ _id: '1', name: '' });
-        setEmployee(data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // useEffect(() => {
+  //   (async () => {
+  //     fetchEmployee();
+  //   })();
+  // }, []);
+  // const fetchEmployee = async () => {
+  //   const token = JSON.parse(localStorage.getItem('token'));
+  //   try {
+  //     const { data, status } = await axios.get(`${URL}/employee`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (status === 200) {
+  //       data.unshift({ _id: '1', name: '' });
+  //       setEmployee(data);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const addEvaluation = async (values) => {
     const currentEmployee = employees.find((emp) => emp._id === values.name);
-    const data = {
-      employeeId: values.name,
-      percentage: values.percent,
-      year: dayjs(values.year).year(),
-      salary: values.salary,
-      company: currentEmployee.company,
-    };
-    console.log(data);
-    const token = JSON.parse(localStorage.getItem('token'));
+    let data = {};
+    let fullUrl = URL;
+    let method;
+    if (state) {
+      fullUrl += `/evaluation/edit/${state.employeeId}`;
+      data = {
+        company: state.company.name,
+        year: state.year,
+        updateYear: dayjs(values.year).year(),
+        salary: values.salary,
+        percentage: values.percent,
+      };
+      method = 'put';
+    } else {
+      fullUrl += '/evaluation/add';
+      data = {
+        employeeId: values.name,
+        percentage: values.percent,
+        year: dayjs(values.year).year(),
+        salary: values.salary,
+        company: currentEmployee.company,
+      };
+      method = 'post';
+    }
     try {
-      const { status, ...restResult } = await axios.post(
-        `${URL}/evaluation/add`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const { status, ...restResult } = await axios(fullUrl, {
+        method: method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        data: data,
+      });
       if (status === 200) {
-        showToast('SUCCESS', 'Employee Added !!');
+        showToast('SUCCESS', 'Employee Saved !!');
         navigate('/evoluations', { replace: true });
       }
       console.log(restResult);
@@ -108,9 +126,7 @@ const AddEvoluation = () => {
           <Form.Select
             className="simple-select"
             {...formik.getFieldProps('name')}
-            // onChange={(e) => {
-            //   console.log(e.target.value);
-            // }}
+            disabled={state}
           >
             {employees.map((emp) => (
               <option

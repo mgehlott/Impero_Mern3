@@ -5,10 +5,9 @@ import Employee from './Employee';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
+import useEmployeeList from '../../hooks/useEmployeeList';
 const URL = 'http://localhost:8080/employee';
 const Employees = () => {
-  const [employee, setEmployee] = useState([]);
-  const token = useSelector((state) => state.auth.token);
   const formik = useFormik({
     initialValues: {
       joiningDate: '',
@@ -16,37 +15,38 @@ const Employees = () => {
     },
   });
   const { salary, joiningDate } = formik.values;
-  useEffect(() => {
-    (async () => {
-      fetchEmployee();
-    })();
-    console.log('effect');
-  }, [salary, joiningDate]);
-  const fetchEmployee = async () => {
-    let fullUrl = URL;
-    if (salary === 'Salary') return;
-    if (salary && joiningDate) {
-      fullUrl = fullUrl + `?salary=${salary}&joiningDate=${joiningDate}`;
-    } else if (salary) {
-      fullUrl = fullUrl + `?salary=${salary}`;
-    } else if (joiningDate) {
-      fullUrl = fullUrl + `?joiningDate=${joiningDate}`;
-    }
-    console.log(fullUrl);
-    try {
-      const { data, status } = await axios.get(fullUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (status === 200) {
-        console.log(data);
-        setEmployee(data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [employee] = useEmployeeList(salary, joiningDate);
+  // useEffect(() => {
+  //   (async () => {
+  //     fetchEmployee();
+  //   })();
+  //   console.log('effect');
+  // }, [salary, joiningDate]);
+  // const fetchEmployee = async () => {
+  //   let fullUrl = URL;
+  //   if (salary === 'Salary') return;
+  //   if (salary && joiningDate) {
+  //     fullUrl = fullUrl + `?salary=${salary}&joiningDate=${joiningDate}`;
+  //   } else if (salary) {
+  //     fullUrl = fullUrl + `?salary=${salary}`;
+  //   } else if (joiningDate) {
+  //     fullUrl = fullUrl + `?joiningDate=${joiningDate}`;
+  //   }
+  //   console.log(fullUrl);
+  //   try {
+  //     const { data, status } = await axios.get(fullUrl, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (status === 200) {
+  //       console.log(data);
+  //       setEmployee(data);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   return (
     <Container
       fluid
@@ -110,8 +110,4 @@ const Employees = () => {
     </Container>
   );
 };
-
-
-
-
 export default Employees;

@@ -1,7 +1,8 @@
 const { matchedData, validationResult } = require('express-validator');
 const Company = require('../models/Company');
 const Employee = require('../models/Employee');
-const { Types, default: mongoose } = require('mongoose');
+const { getRandomPassword, hashPassword } = require('../utils/password');
+const { sendMail } = require('../utils/mail');
 exports.addEmployee = async (req, res, next) => {
   const {
     company: companyId,
@@ -31,11 +32,24 @@ exports.addEmployee = async (req, res, next) => {
       return;
     } else if (compareDate(birthdate, joiningdate)) {
       const err = new Error('Birth date must be lower than joining date');
-      next(err);
+      return next(err);
     } else {
       console.log('dljflsdjf', companyId);
       const companyName = await Company.findById(companyId);
       console.log(companyName);
+      if (!companyName) {
+        const err = new Error('Company does not exits');
+        return next(err);
+      }
+      const tempPassword = getRandomPassword();
+      const hashedPassword = await hashPassword(tempPassword);
+      console.log(process.env.GMAIL_PASSWORD, process.env.GMAIL_USER);
+      sendMail({
+        to: email,
+        subject: '!!Account Created !!',
+        text: 'Congratulation, Your account have created',
+        html: `<h3>Hy, ${name}, Please Login with following credential </h3> <p>email: mahendragehlot006@gmail.com</p><p>Password: ${tempPassword}</p>`,
+      });
       const tempUser = {
         company: {
           name: companyName.name,
@@ -43,6 +57,7 @@ exports.addEmployee = async (req, res, next) => {
         },
         name,
         email,
+        password: hashedPassword,
         birthDate: new Date(birthdate),
         joiningDate: new Date(joiningdate),
         salary,
@@ -82,7 +97,7 @@ exports.editEmployee = async (req, res, next) => {
   console.log(req.body);
   const user = await Employee.findOne({ email: req.body.email });
   console.log(user);
- // console.log(user._id.toString(), employeeId);
+  // console.log(user._id.toString(), employeeId);
   if (user && user._id.toString() !== employeeId) {
     const err = new Error('Email already exits');
     next(err);
