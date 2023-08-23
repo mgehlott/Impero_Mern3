@@ -122,12 +122,13 @@ exports.getYearsRange = async (req, res, next) => {
 };
 exports.editEvaluation = async (req, res, next) => {
   const { employeeId } = req.params;
-  const { company, updateYear, year, salary, percentage } = req.body;
+  const { company, updateYear, year, salary, percentage } = matchedData(req);
   console.log(employeeId, company, year, salary, percentage, updateYear);
-  if (!company || !year || !salary || !percentage || !updateYear) {
-    const error = new Error('All fields are required');
-    console.log(error);
-    return next(error);
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const err = new Error(errors.array()[0].msg);
+    next(err);
+    return;
   }
   try {
     const result = await Employee.updateOne(

@@ -1,21 +1,19 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Col, Container, Form, Table, Row } from 'react-bootstrap';
+import { Col, Container, Table, Row } from 'react-bootstrap';
 import Evaluation from './Evaluation';
 import CustomSlider from '../utils/CustomSlider';
 import { useFormik } from 'formik';
 import { useSelector } from 'react-redux';
 import useCompanyList from '../../hooks/useCompanyList';
 import Select from 'react-select';
-import dayjs from 'dayjs';
 const URL = 'http://localhost:8080';
 const Evaluations = () => {
   const [myEvaluations, setMyEvaluations] = useState([]);
-  const [ companies ] = useCompanyList();
+  const [companies] = useCompanyList();
   const [sliderValues, setSliderValues] = useState([2021, 2023]);
   const [years, setYears] = useState([]);
   const [companySelectValue, setCompanySelectValue] = useState(null);
-  const [isMenu, setIsMenu] = useState(false);
   const token = useSelector((state) => state.auth.token);
   let minYear = 2020,
     maxYear = 2023;
@@ -100,14 +98,10 @@ const Evaluations = () => {
     setCompanySelectValue(e);
     fetchEvaluations(query);
   };
-  const comapnySelectCloseHandler = () => {
-    console.log('close select');
-    fetchEvaluations();
-  };
   const companiesName = companies.map((item) => {
     return { label: item.name, value: item.name };
   });
-  {console.log('years',years);}
+    console.log('years', years);
   return (
     <Container
       fluid

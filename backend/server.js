@@ -8,6 +8,7 @@ const dbConnect = require('./utils/dbConnect');
 const { notFound, mainErrorHandler } = require('./middlewares/errorHandler');
 const authMiddleware = require('./middlewares/authMiddleware');
 const cors = require('cors');
+const { getRandomPassword } = require('./utils/password');
 const app = express();
 dotenv.config();
 // app.use((req, res, next) => {
