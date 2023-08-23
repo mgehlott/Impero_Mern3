@@ -5,31 +5,31 @@ import { AiFillDelete, AiFillEdit } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import { showToast } from '../../utils/tool';
 import { useNavigate } from 'react-router-dom';
+import useCompanyList from '../../hooks/useCompanyList';
 const URL = 'http://localhost:8080/company';
 const Companies = () => {
-  const [companies, setCompanies] = useState([]);
+  const [companies] = useCompanyList();
   const token = useSelector((state) => state.auth.token);
   const navigate = useNavigate();
-  const fetchCompanies = async () => {
-    const token = JSON.parse(localStorage.getItem('token'));
-    try {
-      const { data } = await axios.get(URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(data);
-      setCompanies(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    console.log('company');
-    (async () => {
-      await fetchCompanies();
-    })();
-  }, []);
+  // const fetchCompanies = async () => {
+  //   try {
+  //     const { data } = await axios.get(URL, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     console.log(data);
+  //     setCompanies(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   console.log('company');
+  //   (async () => {
+  //     await fetchCompanies();
+  //   })();
+  // }, []);
   const editBtnHandler = (company) => {
     console.log('edit');
     navigate('/edit-company', {

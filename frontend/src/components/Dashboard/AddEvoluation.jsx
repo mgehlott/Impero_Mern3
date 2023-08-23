@@ -8,9 +8,10 @@ import { showToast } from '../../utils/tool';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { useSelector } from 'react-redux';
+import useEmployeeList from '../../hooks/useEmployeeList';
 const URL = 'http://localhost:8080';
 const AddEvoluation = () => {
-  const [employees, setEmployee] = useState([]);
+  const [employees] = useEmployeeList();
   const navigate = useNavigate();
   const { state } = useLocation();
   const token = useSelector((state) => state.auth.token);
@@ -42,27 +43,27 @@ const AddEvoluation = () => {
   const cancelHandler = () => {
     navigate('/evoluations', { replace: true });
   };
-  useEffect(() => {
-    (async () => {
-      fetchEmployee();
-    })();
-  }, []);
-  const fetchEmployee = async () => {
-    const token = JSON.parse(localStorage.getItem('token'));
-    try {
-      const { data, status } = await axios.get(`${URL}/employee`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (status === 200) {
-        data.unshift({ _id: '1', name: '' });
-        setEmployee(data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // useEffect(() => {
+  //   (async () => {
+  //     fetchEmployee();
+  //   })();
+  // }, []);
+  // const fetchEmployee = async () => {
+  //   const token = JSON.parse(localStorage.getItem('token'));
+  //   try {
+  //     const { data, status } = await axios.get(`${URL}/employee`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (status === 200) {
+  //       data.unshift({ _id: '1', name: '' });
+  //       setEmployee(data);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const addEvaluation = async (values) => {
     const currentEmployee = employees.find((emp) => emp._id === values.name);
     let data = {};

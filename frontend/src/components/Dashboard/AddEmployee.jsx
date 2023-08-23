@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useFormik } from 'formik';
-import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Container, Form, Button } from 'react-bootstrap';
 import InputError from '../utils/InputError';
@@ -8,9 +7,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { showToast } from '../../utils/tool';
 import { useSelector } from 'react-redux';
+import useCompanyList from '../../hooks/useCompanyList';
 const URL = 'http://localhost:8080';
 const AddEmployee = () => {
-  const [companies, setCompanies] = useState([]);
+  const [companies] = useCompanyList();
   const { state } = useLocation();
   const token = useSelector((state) => state.auth.token);
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const AddEmployee = () => {
   const rDate = state?.resignationDate
     ? dayjs(state?.resignationDate).format('YYYY-MM-DD')
     : '';
-  console.log(joinDate, bDate, rDate, state?.company);
+  console.log('employee state', joinDate, bDate, rDate, state?.company);
   const formik = useFormik({
     initialValues: {
       company: state?.company.companyId || '',
@@ -61,34 +61,33 @@ const AddEmployee = () => {
       addEmployee(values);
     },
   });
-  const fetchCompanies = async () => {
-    const token = JSON.parse(localStorage.getItem('token'));
-    try {
-      const { data } = await axios.get(`${URL}/company`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(data);
-      data.unshift({ _id: '1', name: '' });
-      setCompanies(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    console.log('company');
-    (async () => {
-      await fetchCompanies();
-    })();
-  }, []);
+  // const fetchCompanies = async () => {
+  //   const token = JSON.parse(localStorage.getItem('token'));
+  //   try {
+  //     const { data } = await axios.get(`${URL}/company`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     console.log(data);
+  //     data.unshift({ _id: '1', name: '' });
+  //     setCompanies(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   console.log('company');
+  //   (async () => {
+  //     await fetchCompanies();
+  //   })();
+  // }, []);
   const addEmployee = async (values) => {
     console.log(values.company);
     const companyName = companies.find((item) => item._id === values.company);
     console.log(companyName);
     let fullUrl = URL;
     let method, data;
-    
     if (state) {
       fullUrl += `/employee/edit/${state._id}`;
       method = 'put';
