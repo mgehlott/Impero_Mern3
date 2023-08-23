@@ -61,14 +61,14 @@ exports.editCompany = async (req, res, next) => {
       next(err);
       return;
     }
-    console.log(
-      await Employee.find({
-        $or: [
-          { 'company.companyId': companyId },
-          { evaluations: { $elemMatch: { 'company.companyId': companyId } } },
-        ],
-      })
-    );
+    // console.log(
+    //   await Employee.find({
+    //     $or: [
+    //       { 'company.companyId': companyId },
+    //       { evaluations: { $elemMatch: { 'company.companyId': companyId } } },
+    //     ],
+    //   })
+    // );
     await Employee.updateMany(
       {
         $or: [

@@ -3,7 +3,9 @@ import { Modal, Button, Table } from 'react-bootstrap';
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import { showToast } from '../../utils/tool';
+
 import { useNavigate } from 'react-router-dom';
+
 const CustomModal = ({ show, modalCloseHandler, item }) => {
   console.log('modal', item);
   const token = useSelector((state) => state.auth.token);
@@ -35,14 +37,16 @@ const CustomModal = ({ show, modalCloseHandler, item }) => {
       showToast('ERROR', 'Try Again Later');
     }
   };
-  const editBtnHandler = (name, percentage, salary, year) => {
+  const editBtnHandler = (employeeId,name, percentage, salary, year,company) => {
     navigate('/add-evoluation', {
       replace: true,
       state: {
+        employeeId,
         name,
         percentage,
         salary,
         year,
+        company
       },
     });
   };
@@ -95,10 +99,12 @@ const CustomModal = ({ show, modalCloseHandler, item }) => {
                       variant="outline-primary"
                       onClick={() =>
                         editBtnHandler(
+                          item._id,
                           item.name,
                           it.percentage,
                           it.salary,
-                          it.year
+                          it.year,
+                          it.company
                         )
                       }
                     >

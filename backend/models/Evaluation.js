@@ -1,10 +1,9 @@
-const mongoose = require("mongoose");
-
+const mongoose = require('mongoose');
 const evaluationSchema = new mongoose.Schema(
   {
     employeeId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Employee",
+      ref: 'Employee',
     },
     percentage: {
       type: Number,
@@ -20,11 +19,10 @@ const evaluationSchema = new mongoose.Schema(
     },
     company: {
       type: String,
-      require:true
-    }
+      require: true,
+    },
   },
   { timestamps: true }
 );
-
-const evaluation = mongoose.model("evaluation", evaluationSchema);
+const evaluation = mongoose.model('evaluation', evaluationSchema);
 module.exports = evaluation;

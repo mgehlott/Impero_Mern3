@@ -23,5 +23,6 @@ router.post(
 );
 router.get('/', evaluationController.getEvaluation);
 router.get('/years', evaluationController.getYearsRange);
+router.put('/edit/:employeeId', evaluationController.editEvaluation);
 router.delete('/delete', evaluationController.deleteEvaluation);
 module.exports = router;

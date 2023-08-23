@@ -6,6 +6,7 @@ import CustomSlider from '../utils/CustomSlider';
 import { useFormik } from 'formik';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
+import dayjs from 'dayjs';
 const URL = 'http://localhost:8080';
 const Evaluations = () => {
   const [myEvaluations, setMyEvaluations] = useState([]);
@@ -106,6 +107,7 @@ const Evaluations = () => {
   const companiesName = companies.map((item) => {
     return { label: item.name, value: item.name };
   });
+  {console.log('years',years);}
   return (
     <Container
       fluid

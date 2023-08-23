@@ -22,6 +22,7 @@ exports.addEvaluation = async (req, res, next) => {
       salary,
       percentage,
     };
+    console.log(year);
     await Employee.findByIdAndUpdate(employeeId, {
       $push: { evaluations: evaluationObj },
     });
@@ -66,7 +67,7 @@ exports.getEvaluation = async (req, res, next) => {
       },
       // { $sort: { 'evaluations.year': 1 } },
     ]);
-    // console.log(data);
+    console.log(data);
     res.json(data);
   } catch (error) {
     next(error);
@@ -116,6 +117,38 @@ exports.getYearsRange = async (req, res, next) => {
     }
     return res.json(years);
   } catch (error) {
+    next(error);
+  }
+};
+exports.editEvaluation = async (req, res, next) => {
+  const { employeeId } = req.params;
+  const { company, updateYear, year, salary, percentage } = req.body;
+  console.log(employeeId, company, year, salary, percentage, updateYear);
+  if (!company || !year || !salary || !percentage || !updateYear) {
+    const error = new Error('All fields are required');
+    console.log(error);
+    return next(error);
+  }
+  try {
+    const result = await Employee.updateOne(
+      {
+        _id: employeeId,
+        evaluations: {
+          $elemMatch: { 'company.name': company, year: year },
+        },
+      },
+      {
+        $set: {
+          'evaluations.$.year': updateYear,
+          'evaluations.$.salary': salary,
+          'evaluations.$.percentage': percentage,
+        },
+      },
+      { new: true }
+    );
+    res.json({ message: 'Updated', result });
+  } catch (error) {
+    console.log(error);
     next(error);
   }
 };
