@@ -11,6 +11,7 @@ import Employees from './components/Dashboard/Employees';
 import AddEmployee from './components/Dashboard/AddEmployee';
 import AddEvoluation from './components/Dashboard/AddEvoluation';
 import Evaluations from './components/Dashboard/Evaluations';
+import CompanyDetail from './components/Dashboard/CompanyDetail';
 function App() {
   const user = useSelector((state) => state.auth.user);
   console.log(user);
@@ -47,6 +48,7 @@ function App() {
               path="companies"
               element={<Companies />}
             />
+            <Route path='/companies/:id' element={ <CompanyDetail/>} />
             <Route
               path="employees"
               element={<Employees />}

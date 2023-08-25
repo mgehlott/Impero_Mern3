@@ -101,7 +101,10 @@ const Evaluations = () => {
   const companiesName = companies.map((item) => {
     return { label: item.name, value: item.name };
   });
-    console.log('years', years);
+  console.log('years', years);
+    if (myEvaluations.length === 0) {
+      return <h2 className="text-center">No Evaluation found.</h2>;
+    }
   return (
     <Container
       fluid

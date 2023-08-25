@@ -1,10 +1,11 @@
 const { matchedData, validationResult } = require('express-validator');
 const Company = require('../models/Company');
 const Employee = require('../models/Employee');
+const { deleteImage } = require('../utils/service');
 exports.addCompany = async (req, res, next) => {
   console.log('company');
-  const { name } = matchedData(req);
-  console.log(name);
+  const { name, address, description, img } = matchedData(req);
+  console.log(name, address, description, req.file);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const err = new Error(errors.array()[0].msg);
@@ -25,8 +26,14 @@ exports.addCompany = async (req, res, next) => {
       return;
     }
     console.log('insert', fetchCompany);
-    const company = await Company.create({ name });
-    console.log(company);
+    const imageName = req?.file?.filename || '';
+    const company = await Company.create({
+      name,
+      address,
+      description,
+      image: imageName,
+    });
+    console.log('add company', company);
     res.json(company);
   } catch (error) {
     next(error);
@@ -99,7 +106,12 @@ exports.deleteCompany = async (req, res, next) => {
     if (employee) {
       return res.status(500).json('Currently you can not delete.');
     }
+    const company = await Company.findById(companyId);
+    if (company.image && company.image.length !== 0) {
+      deleteImage(company.image);
+    }
     const deleted = await Company.findByIdAndDelete(companyId);
+    console.log('deleted', deleted);
     res.json('Company deleted');
   } catch (error) {
     console.log(error);

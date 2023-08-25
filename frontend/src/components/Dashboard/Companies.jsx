@@ -30,14 +30,16 @@ const Companies = () => {
   //     await fetchCompanies();
   //   })();
   // }, []);
-  const editBtnHandler = (company) => {
+  const editBtnHandler = (e, company) => {
+    e.stopPropagation();
     console.log('edit');
     navigate('/edit-company', {
       replace: true,
       state: { company },
     });
   };
-  const deleteBtnHandler = async (companyId) => {
+  const deleteBtnHandler = async (e, companyId) => {
+    e.stopPropagation();
     try {
       const { data, status } = await axios.delete(
         `${URL}/delete/${companyId}`,
@@ -60,6 +62,19 @@ const Companies = () => {
       console.log(error);
     }
   };
+  const listItemClickHandler = (data) => {
+    navigate('/companies/' + data._id, {
+      state: {
+        name: data.name,
+        image: data.image,
+        address: data.address,
+        description: data.description,
+      },
+    });
+  };
+  if (companies.length == 0) {
+    return <h2 className='text-center'>No Company Available</h2>;
+  }
   return (
     <Container fluid>
       <ListGroup
@@ -71,6 +86,11 @@ const Companies = () => {
             as="li"
             key={company._id}
             className="d-flex justify-content-between"
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              console.log('item click');
+              listItemClickHandler(company);
+            }}
           >
             <div>{company.name}</div>
             <div className="icon-container">
@@ -78,15 +98,15 @@ const Companies = () => {
                 className="m-2 ml-3"
                 fontSize="21px"
                 color="#0d6efd"
-                onClick={() => {
-                  editBtnHandler(company);
+                onClick={(e) => {
+                  editBtnHandler(e, company);
                 }}
               />
               <AiFillDelete
                 fontSize="21px"
                 color="#c90c1e"
-                onClick={() => {
-                  deleteBtnHandler(company._id);
+                onClick={(e) => {
+                  deleteBtnHandler(e, company._id);
                 }}
               />
             </div>

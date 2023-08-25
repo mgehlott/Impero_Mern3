@@ -47,6 +47,9 @@ const Employees = () => {
   //     console.log(error);
   //   }
   // };
+  if (employee.length === 0) {
+    return <h2 className='text-center'>No Employee found.</h2>;
+  }
   return (
     <Container
       fluid
