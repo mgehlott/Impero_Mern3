@@ -10,6 +10,7 @@ const authMiddleware = require('./middlewares/authMiddleware');
 const cors = require('cors');
 const { getRandomPassword } = require('./utils/password');
 const app = express();
+global.__baseurl = __dirname;
 dotenv.config();
 // app.use((req, res, next) => {
 //   console.log('app');
@@ -19,6 +20,7 @@ dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
+app.use('/public/images', express.static(__dirname + '/public/images/'));
 const PORT = process.env.PORT || 5000;
 dbConnect();
 app.use('/company', authMiddleware, companyRouter);
