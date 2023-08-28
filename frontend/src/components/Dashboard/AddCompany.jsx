@@ -16,8 +16,8 @@ const AddCompany = () => {
   const formik = useFormik({
     initialValues: {
       company: state ? state.company.name : '',
-      address: '',
-      description: '',
+      address: state ? state.company.address : '',
+      description: state ? state.company.description : '',
       img: '',
     },
     validationSchema: Yup.object({
@@ -47,6 +47,7 @@ const AddCompany = () => {
     formData.append('address', values.address);
     formData.append('description', values.description);
     formData.append('img', values.img);
+    console.log('formdata', formData);
     try {
       const { status, ...restResult } = await axios(fullUrl, {
         method: method,

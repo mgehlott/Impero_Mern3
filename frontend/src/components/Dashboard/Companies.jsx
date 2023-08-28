@@ -1,12 +1,15 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Container, ListGroup } from 'react-bootstrap';
+import { Col, Container, Image, ListGroup, Row } from 'react-bootstrap';
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import { showToast } from '../../utils/tool';
 import { useNavigate } from 'react-router-dom';
 import useCompanyList from '../../hooks/useCompanyList';
 const URL = 'http://localhost:8080/company';
+const IMG_URL = 'http://localhost:8080/public/images/';
+const defaultImage =
+  'https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg?w=740';
 const Companies = () => {
   const [companies] = useCompanyList();
   const token = useSelector((state) => state.auth.token);
@@ -73,26 +76,36 @@ const Companies = () => {
     });
   };
   if (companies.length == 0) {
-    return <h2 className='text-center'>No Company Available</h2>;
+    return <h2 className="text-center">No Company Available</h2>;
   }
   return (
     <Container fluid>
-      <ListGroup
-        as="ol"
-        numbered
-      >
-        {companies.map((company) => (
-          <ListGroup.Item
-            as="li"
-            key={company._id}
-            className="d-flex justify-content-between"
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              console.log('item click');
-              listItemClickHandler(company);
-            }}
+      {companies.map((company) => (
+        <Row
+          key={company._id}
+          className="d-flex justify-content-between company"
+          style={{ cursor: 'pointer', maxHeight: '200px' }}
+          onClick={() => {
+            console.log('item click');
+            listItemClickHandler(company);
+          }}
+        >
+          <Col
+            xs={4}
+            sm={3}
+            md={2}
           >
-            <div>{company.name}</div>
+            <Image
+              className="company-image"
+              src={ company.image ? `${IMG_URL}${company.image}` : defaultImage }
+              alt={company.name}
+            />
+          </Col>
+          <Col className="mt-3">
+            <h5 className='company-home-name'>{company.name}</h5>
+            <div>{company.address}</div>
+          </Col>
+          <Col xs={2}>
             <div className="icon-container">
               <AiFillEdit
                 className="m-2 ml-3"
@@ -110,9 +123,9 @@ const Companies = () => {
                 }}
               />
             </div>
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
+          </Col>
+        </Row>
+      ))}
     </Container>
   );
 };

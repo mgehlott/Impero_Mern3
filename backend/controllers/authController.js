@@ -61,6 +61,7 @@ exports.employeeLogin = async (req, res, next) => {
         const user = {
           name: fetchedEmployee.name,
           id: fetchedEmployee._id,
+          companyId: fetchedEmployee.company.companyId,
         };
         const token = await jwt.sign({ user }, process.env.PRIVATE_KEY);
         res.json({ token: token, user: user });

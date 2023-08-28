@@ -48,12 +48,12 @@ const Employees = () => {
   //   }
   // };
   if (employee.length === 0) {
-    return <h2 className='text-center'>No Employee found.</h2>;
+    return <h2 className="text-center">No Employee found.</h2>;
   }
   return (
     <Container
       fluid
-      className="mt-3"
+      className="mt-3 "
     >
       <Row>
         <Col className="d-flex justify-content-end mb-5">
@@ -86,6 +86,7 @@ const Employees = () => {
             striped
             bordered
             hover
+            className="container-shadow"
           >
             <thead>
               <tr>

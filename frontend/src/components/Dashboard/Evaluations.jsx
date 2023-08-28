@@ -102,9 +102,6 @@ const Evaluations = () => {
     return { label: item.name, value: item.name };
   });
   console.log('years', years);
-    if (myEvaluations.length === 0) {
-      return <h2 className="text-center">No Evaluation found.</h2>;
-    }
   return (
     <Container
       fluid
@@ -157,6 +154,7 @@ const Evaluations = () => {
             striped
             bordered
             hover
+            className="container-shadow"
           >
             <thead>
               <tr>

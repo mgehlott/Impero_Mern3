@@ -14,6 +14,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 router.get('/', companyController.getAllCompany);
+router.get('/:companyId', companyController.getCompany);
 router.post(
   '/add',
   upload.single('img'),
@@ -26,7 +27,12 @@ router.post(
 );
 router.put(
   '/edit/:companyId',
-  body('name').trim().notEmpty().withMessage('Invalid Company name'),
+  upload.single('img'),
+  [
+    body('name').trim().notEmpty().withMessage('Invalid company name'),
+    body('address').trim().notEmpty().withMessage('Invalid address'),
+    body('description').trim().notEmpty().withMessage('Invalid description'),
+  ],
   companyController.editCompany
 );
 router.delete('/delete/:companyId', companyController.deleteCompany);

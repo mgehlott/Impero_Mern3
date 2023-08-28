@@ -83,7 +83,7 @@ const AddEmployee = () => {
   //   })();
   // }, []);
   const addEmployee = async (values) => {
-    console.log(values.company);
+    console.log(values.company,values,'add');
     const companyName = companies.find((item) => item._id === values.company);
     console.log(companyName);
     let fullUrl = URL;
@@ -247,7 +247,7 @@ const AddEmployee = () => {
             variant="success"
             type="submit"
             className="m-2"
-          >
+           >
             Save
           </Button>
           <Button

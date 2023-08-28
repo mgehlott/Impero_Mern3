@@ -7,15 +7,12 @@ export const showToast = (type, message) => {
       });
       break;
     case 'ERROR':
-      toast.error(message, { position: 'top-right' });
+      toast.error(message, {
+        position: 'top-right',
+      });
       break;
     default:
       return false;
   }
 };
-
-
-export const getCompaniesName = (companies) => {
-  
-
-}
+export const getCompaniesName = (companies) => {};

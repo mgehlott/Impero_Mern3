@@ -4,7 +4,7 @@ const Employee = require('../models/Employee');
 const { deleteImage } = require('../utils/service');
 exports.addCompany = async (req, res, next) => {
   console.log('company');
-  const { name, address, description, img } = matchedData(req);
+  const { name, address, description } = matchedData(req);
   console.log(name, address, description, req.file);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -39,6 +39,20 @@ exports.addCompany = async (req, res, next) => {
     next(error);
   }
 };
+exports.getCompany = async (req, res, next) => {
+  const { companyId } = req.params;
+  try {
+    const company = await Company.findById(companyId);
+    if (company) {
+      return res.json(company);
+    } else {
+      const err = new Error('No Company found');
+      return next(err);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 exports.getAllCompany = async (req, res, next) => {
   try {
     const companies = await Company.find();
@@ -49,11 +63,12 @@ exports.getAllCompany = async (req, res, next) => {
 };
 exports.editCompany = async (req, res, next) => {
   const { companyId } = req.params;
-  const { name } = matchedData(req);
-  console.log(companyId, name);
+  const { name, address, description } = matchedData(req);
+  console.log(name, address, req.file);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const err = new Error(errors.array()[0].msg);
+    console.log(err);
     next(err);
     return;
   }
@@ -61,7 +76,8 @@ exports.editCompany = async (req, res, next) => {
     const fetchCompany = await Company.findOne({ name });
     if (
       fetchCompany &&
-      fetchCompany?.name.toLowerCase() === name.toLowerCase()
+      fetchCompany?.name.toLowerCase() === name.toLowerCase() &&
+      fetchCompany._id.toString() !== companyId
     ) {
       const err = new Error('Company name is already exits');
       console.log(err);
@@ -90,10 +106,25 @@ exports.editCompany = async (req, res, next) => {
         },
       }
     );
-    const updated = await Company.findByIdAndUpdate(companyId, req.body, {
-      new: true,
+    const data = {
+      name: name,
+      address: address,
+      description: description,
+    };
+    if (req.file && req.file.filename) {
+      data.image = req.file.filename;
+    }
+    const previousCompany = await Company.findByIdAndUpdate(companyId, {
+      $set: data,
     });
-    res.json(updated);
+    if (
+      req.file &&
+      previousCompany.image &&
+      previousCompany.image.length !== 0
+    ) {
+      deleteImage(previousCompany.image);
+    }
+    res.json('updated');
   } catch (error) {
     next(error);
   }
